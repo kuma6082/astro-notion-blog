@@ -1,0 +1,102 @@
+---
+import { Icon } from 'astro-icon/components'
+export interface Props {
+  iconEmoji?: string
+  iconUrl?: string
+  github: string
+  x?: string
+  intro: string
+}
+
+
+const { iconEmoji = '', 
+        iconUrl = 'https://kirara-code.net/_next/image?url=https%3A%2F%2Fstatic.kirara-code.net%2Fimages%2FTGGVCLZSS-U021L5CS6Q6-a88d7eb9f8b5-512_9166ff7b-bb0b-4e7d-813d-773683fcb71a.jpeg&w=256&q=75', 
+        github="https://github.com/kuma6082/",
+        x="https://x.com/kuma6082",
+        } = Astro.props
+---
+
+<div class="profile">
+  {
+    iconEmoji && !iconUrl ? (
+      <span class="profile-icon emoji">{iconEmoji}</span>
+    ) : iconUrl ? (
+      <img class="profile-icon" src={iconUrl} alt="profile" />
+    ) : null
+  }
+  <p class="intro">東京都在住。<br>
+    厨房設備レイアウト設計に8年以上従事し、VBA・GAS・Pythonで業務効率化を実践。ITエンジニア転職を目指しプログラミング学習中。学習記録や業務改善、雑記も発信しています。</p>
+  <ul class="links">
+    {
+      x && (
+        <li>
+          <a href={x} target="_blank" rel="noopener noreferrer">
+            <Icon name="ri:twitter-x-fill" class="icon" />
+          </a>
+        </li>
+      )
+    }
+    <li>
+      <a href={github} target="_blank" rel="noopener noreferrer">
+        <Icon name="mdi:github" class="icon" />
+      </a>
+    </li>
+  </ul>
+</div>
+
+<style>
+  .profile {
+    margin-bottom: 1rem;
+    padding: 0.4rem;
+    text-align: center;
+    font-size: 0.95rem;
+    color: #333;
+    border-bottom: #333 1px solid;
+  }
+  .profile p{
+    text-align: left;
+    font-size: 0.95rem;
+  }
+  .profile-icon {
+    width: 10rem;
+    height: 10rem;
+    border-radius: 50%;
+    margin-bottom: 0.5rem;
+  }
+  .profile-icon.emoji {
+    display: inline-block;
+    font-size: 3rem;
+    line-height: 1;
+  }
+  .intro {
+    margin: 0 0 0.5rem;
+  }
+  .links {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+  .links a {
+    color: inherit;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    padding: 0.2rem 0.4rem;
+    border-radius: var(--radius);
+  }
+  .links a:hover {
+    background-color: #ddd;
+  }
+  .links svg {
+    width: 1rem;
+    height: 1rem;
+  }
+  .links .icon {
+    width: 2rem;
+    height: 2rem;
+  }
+</style>
