@@ -9,6 +9,8 @@ jobs:
   curl:
     name: Kick deploy hook
     runs-on: ubuntu-latest
+    env:
+      TZ: Asia/Tokyo
     steps:
       - name: curl
         run: curl -X POST '${{ secrets.DEPLOY_HOOK_URL }}'
