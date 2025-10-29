@@ -15,3 +15,5 @@ export const REQUEST_TIMEOUT_MS = parseInt(
   10
 )
 export const ENABLE_LIGHTBOX = import.meta.env.ENABLE_LIGHTBOX
+export const PROFILE_PAGE_ID =
+  import.meta.env.PROFILE_PAGE_ID || process.env.PROFILE_PAGE_ID || ''

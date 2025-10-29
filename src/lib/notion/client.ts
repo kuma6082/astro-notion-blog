@@ -9,6 +9,7 @@ import {
   DATABASE_ID,
   NUMBER_OF_POSTS_PER_PAGE,
   REQUEST_TIMEOUT_MS,
+  PROFILE_PAGE_ID,
 } from '../../server-constants'
 import type { AxiosResponse } from 'axios'
 import type * as responses from './responses'
@@ -62,6 +63,7 @@ const client = new Client({
 
 let postsCache: Post[] | null = null
 let dbCache: Database | null = null
+let profileBlocksCache: Block[] | null = null
 
 const numberOfRetry = 2
 
@@ -329,6 +331,20 @@ export async function getAllBlocksByBlockId(blockId: string): Promise<Block[]> {
   }
 
   return allBlocks
+}
+
+export async function getProfileBlocks(): Promise<Block[]> {
+  if (!PROFILE_PAGE_ID) {
+    return []
+  }
+
+  if (profileBlocksCache !== null) {
+    return Promise.resolve(profileBlocksCache)
+  }
+
+  const blocks = await getAllBlocksByBlockId(PROFILE_PAGE_ID)
+  profileBlocksCache = blocks
+  return blocks
 }
 
 export async function getBlock(blockId: string): Promise<Block> {

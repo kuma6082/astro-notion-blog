@@ -1,19 +1,30 @@
 ---
 import { Icon } from 'astro-icon/components'
+import NotionBlocks from './NotionBlocks.astro'
+import { getProfileBlocks } from '../lib/notion/client.ts'
+
 export interface Props {
   iconEmoji?: string
   iconUrl?: string
   github: string
   x?: string
-  intro: string
+  intro?: string
 }
 
+const defaultIntro =
+  '東京都在住。<br>厨房設備レイアウト設計に8年以上従事し、VBA・GAS・Pythonで業務効率化を実践。ITエンジニア転職を目指しプログラミング学習中。学習記録や業務改善、雑記も発信しています。'
 
-const { iconEmoji = '', 
-        iconUrl = 'https://kirara-code.net/_next/image?url=https%3A%2F%2Fstatic.kirara-code.net%2Fimages%2FTGGVCLZSS-U021L5CS6Q6-a88d7eb9f8b5-512_9166ff7b-bb0b-4e7d-813d-773683fcb71a.jpeg&w=256&q=75', 
-        github="https://github.com/kuma6082/",
-        x="https://x.com/kuma6082",
-        } = Astro.props
+const {
+  iconEmoji = '',
+  iconUrl =
+    'https://kirara-code.net/_next/image?url=https%3A%2F%2Fstatic.kirara-code.net%2Fimages%2FTGGVCLZSS-U021L5CS6Q6-a88d7eb9f8b5-512_9166ff7b-bb0b-4e7d-813d-773683fcb71a.jpeg&w=256&q=75',
+  github = 'https://github.com/kuma6082/',
+  x = 'https://x.com/kuma6082',
+  intro = defaultIntro,
+} = Astro.props
+
+const profileBlocks = await getProfileBlocks()
+const hasProfileBlocks = profileBlocks.length > 0
 ---
 
 <div class="profile">
@@ -24,8 +35,15 @@ const { iconEmoji = '',
       <img class="profile-icon" src={iconUrl} alt="profile" />
     ) : null
   }
-  <p class="intro">東京都在住。<br>
-    厨房設備レイアウト設計に8年以上従事し、VBA・GAS・Pythonで業務効率化を実践。ITエンジニア転職を目指しプログラミング学習中。学習記録や業務改善、雑記も発信しています。</p>
+  {
+    hasProfileBlocks ? (
+      <div class="intro notion-content">
+        <NotionBlocks blocks={profileBlocks} />
+      </div>
+    ) : (
+      <p class="intro" set:html={intro} />
+    )
+  }
   <ul class="links">
     {
       x && (
@@ -55,6 +73,12 @@ const { iconEmoji = '',
   }
   .profile p{
     text-align: left;
+    font-size: 0.95rem;
+  }
+  .notion-content {
+    text-align: left;
+  }
+  .notion-content :global(p) {
     font-size: 0.95rem;
   }
   .profile-icon {
