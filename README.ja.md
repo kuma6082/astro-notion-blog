@@ -65,6 +65,7 @@ astro-notion-blog を使えば [Notion](https://www.notion.so) で書けるブ�
 10. 「ビルドの設定」で、
     1. 「フレームワーク プリセット」で Astro を選択します
     2. 「環境変数(アドバンスド)」 を開き `NODE_VERSION`, `NOTION_API_SECRET`, `DATABASE_ID` の 3 つを設定します
+       - サイドバーのプロフィールを Notion で管理したい場合は `PROFILE_PAGE_ID` も設定します
        - `NODE_VERSION` は `20.18.1` かそれ以上を指定します
        - 詳しくは [How to deploy a site with Git](https://docs.astro.build/en/guides/deploy/cloudflare/#how-to-deploy-a-site-with-git) をご覧ください
 
@@ -91,7 +92,16 @@ Cloudflare Pages のダッシュボードから手動でデプロイするか、
 ```sh
 export NOTION_API_SECRET=<YOUR_NOTION_API_SECRET>
 export DATABASE_ID=<YOUR_DATABASE_ID>
+# 任意: サイドバーのプロフィールを Notion で管理する場合
+export PROFILE_PAGE_ID=<YOUR_PROFILE_PAGE_ID>
 ```
+
+### Notion からサイドバーのプロフィールを管理する
+
+- サイドバーに表示したいプロフィール文を記載した Notion ページを作成します。
+- ページの URL をコピーし、ワークスペース名の後ろに続くページ ID を取得します。
+- 取得したページ ID を `PROFILE_PAGE_ID` 環境変数に設定します。
+- `PROFILE_PAGE_ID` を設定しない場合は `src/components/Profile.astro` に記述されたデフォルトの文が表示されます。
 
 2. 依存関係をインストールしローカルサーバーを起動します
 

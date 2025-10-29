@@ -60,6 +60,7 @@ astro-notion-blog enables you to create a blog using [Notion](https://www.notion
 10. In "Build settings" section,
     1. Select "Astro" as "Framework preset"
     2. Open "Environment Variables (advanced)" and set `NODE_VERSION`, `NOTION_API_SECRET` and `DATABASE_ID`
+       - Set `PROFILE_PAGE_ID` as well if you want to manage the sidebar profile text in Notion
        - `NODE_VERSION` is `20.18.1` or higher
        - [How to deploy a site with Git](https://docs.astro.build/en/guides/deploy/cloudflare/#how-to-deploy-a-site-with-git) is helpful
 
@@ -84,7 +85,16 @@ Please note that the astro-notion-blog requires manual deployment every time you
 ```sh
 export NOTION_API_SECRET=<YOUR_NOTION_API_SECRET>
 export DATABASE_ID=<YOUR_DATABASE_ID>
+# Optional: if you manage the sidebar profile in Notion
+export PROFILE_PAGE_ID=<YOUR_PROFILE_PAGE_ID>
 ```
+
+### Manage the sidebar profile from Notion
+
+- Create a Notion page that contains the profile content you want to show in the sidebar.
+- Copy the page URL and extract the page ID (the part after the workspace name).
+- Set the page ID to the `PROFILE_PAGE_ID` environment variable.
+- The content of that page will appear in the profile card. If the variable is omitted, the default text in `src/components/Profile.astro` is used instead.
 
 2. Install dependencies and start local server
 
