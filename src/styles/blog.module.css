@@ -12,11 +12,33 @@
   }
 }
 
-.post {
+.postList {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
   margin: 0 auto 40px;
 }
+
+.post {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+  padding: 24px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 16px;
+  background-color: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 18px 35px -25px rgba(0, 0, 0, 0.6);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.post:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 22px 40px -20px rgba(0, 0, 0, 0.65);
+}
+
 .post footer {
-  margin-top: 0.5rem;
+  margin-top: auto;
   padding: 0;
   border: 0;
 }
