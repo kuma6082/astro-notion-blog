@@ -50,16 +50,18 @@ const currentTag = posts[0].Tags.find((t) => t.name === tag)
       posts.length === 0 ? (
         <NoContents contents={posts} />
       ) : (
-        posts.map((post) => (
-          <div class={styles.post} key={post.Slug}>
-            <PostDate post={post} />
-            <PostTags post={post} />
-            <PostTitle post={post} />
-            <PostFeaturedImage post={post} />
-            <PostExcerpt post={post} />
-            <ReadMoreLink post={post} />
-          </div>
-        ))
+        <div class={styles.postList}>
+          {posts.map((post) => (
+            <article class={styles.post} key={post.Slug}>
+              <PostFeaturedImage post={post} />
+              <PostTitle post={post} />
+              <PostDate post={post} />
+              <PostTags post={post} />
+              <PostExcerpt post={post} />
+              <ReadMoreLink post={post} />
+            </article>
+          ))}
+        </div>
       )
     }
 
