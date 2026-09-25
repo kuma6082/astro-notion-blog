@@ -15,7 +15,10 @@ const retry = (maxRetries, fn) => {
   });
 };
 
-const retrieveAndWriteBlockChildren = async (blockId) => {
+const retrieveAndWriteBlockChildren = async (
+  blockId,
+  { notionClient = notion, fileSystem = fs, wait = setTimeout } = {}
+) => {
   const params = { block_id: blockId };
 
   let results = [];
@@ -23,9 +26,9 @@ const retrieveAndWriteBlockChildren = async (blockId) => {
   while (true) {
     // For Notion API Requests limits
     // See https://developers.notion.com/reference/request-limits
-    await setTimeout(requestDuration);
+    await wait(requestDuration);
 
-    const res = await retry(3, () => notion.blocks.children.list(params));
+    const res = await retry(3, () => notionClient.blocks.children.list(params));
 
     results = results.concat(res.results);
 
@@ -36,16 +39,20 @@ const retrieveAndWriteBlockChildren = async (blockId) => {
     params['start_cursor'] = res.next_cursor;
   }
 
-  fs.writeFileSync(`tmp/${blockId}.json`, JSON.stringify(results));
+  fileSystem.writeFileSync(`tmp/${blockId}.json`, JSON.stringify(results));
 
-  results.forEach(async (block) => {
+  for (const block of results) {
     if (
       block.type === 'synced_block' &&
       block.synced_block.synced_from &&
       block.synced_block.synced_from.block_id
     ) {
       try {
-        await retrieveAndWriteBlock(block.synced_block.synced_from.block_id);
+        await retrieveAndWriteBlock(block.synced_block.synced_from.block_id, {
+          notionClient,
+          fileSystem,
+          wait,
+        });
       } catch (err) {
         console.log(
           `Could not retrieve the original synced_block. error: ${err}`
@@ -53,28 +60,48 @@ const retrieveAndWriteBlockChildren = async (blockId) => {
         throw err;
       }
     } else if (block.has_children) {
-      await retrieveAndWriteBlockChildren(block.id);
+      await retrieveAndWriteBlockChildren(block.id, {
+        notionClient,
+        fileSystem,
+        wait,
+      });
     }
-  });
+  }
 };
 
-const retrieveAndWriteBlock = async (blockId) => {
+const retrieveAndWriteBlock = async (
+  blockId,
+  { notionClient = notion, fileSystem = fs, wait = setTimeout } = {}
+) => {
   const params = { block_id: blockId };
 
   // For Notion API Requests limits
   // See https://developers.notion.com/reference/request-limits
-  await setTimeout(requestDuration);
+  await wait(requestDuration);
 
-  const block = await retry(3, () => notion.blocks.retrieve(params));
+  const block = await retry(3, () => notionClient.blocks.retrieve(params));
 
-  fs.writeFileSync(`tmp/${blockId}.json`, JSON.stringify(block));
+  fileSystem.writeFileSync(`tmp/${blockId}.json`, JSON.stringify(block));
 
   if (block.has_children) {
-    await retrieveAndWriteBlockChildren(block.id);
+    await retrieveAndWriteBlockChildren(block.id, {
+      notionClient,
+      fileSystem,
+      wait,
+    });
   }
 };
 
-(async () => {
+const main = async () => {
   const blockId = process.argv[2];
   await retrieveAndWriteBlockChildren(blockId);
-})();
+};
+
+if (require.main === module) {
+  main().catch((err) => {
+    console.error(err);
+    process.exitCode = 1;
+  });
+}
+
+module.exports = { retrieveAndWriteBlock, retrieveAndWriteBlockChildren };

@@ -5,6 +5,23 @@ const { PromisePool } = require('@supercharge/promise-pool');
 
 const notion = new Client({ auth: process.env.NOTION_API_SECRET });
 
+const runCacheTask = (page, execCommand = exec) => {
+  return new Promise((resolve, reject) => {
+    const command = `NX_BRANCH=main npx nx run astro-notion-blog:_fetch-notion-blocks ${page.id} ${page.last_edited_time}`;
+    const options = { timeout: 60000 };
+
+    execCommand(command, options, (err, stdout, stderr) => {
+      if (err) {
+        console.error(`exec error: ${err}`);
+        reject(err);
+        return;
+      }
+
+      resolve();
+    });
+  });
+};
+
 const getAllPages = async () => {
   const params = {
     database_id: process.env.DATABASE_ID,
@@ -52,7 +69,26 @@ const getAllPages = async () => {
   return pages;
 };
 
-(async () => {
+const fetchPageContents = async (
+  pages,
+  concurrency,
+  progressBar,
+  execCommand = exec
+) => {
+  const { errors } = await PromisePool.withConcurrency(concurrency)
+    .for(pages)
+    .process(async (page) => {
+      await runCacheTask(page, execCommand);
+      progressBar.increment();
+    });
+
+  if (errors.length > 0) {
+    progressBar.stop();
+    throw errors[0];
+  }
+};
+
+const main = async () => {
   const pages = await getAllPages();
 
   const concurrency = parseInt(process.env.CACHE_CONCURRENCY || '1', 10);
@@ -63,20 +99,14 @@ const getAllPages = async () => {
   );
   progressBar.start(pages.length, 0);
 
-  await PromisePool.withConcurrency(concurrency)
-    .for(pages)
-    .process(async (page) => {
-      return new Promise((resolve) => {
-        const command = `NX_BRANCH=main npx nx run astro-notion-blog:_fetch-notion-blocks ${page.id} ${page.last_edited_time}`;
-        const options = { timeout: 60000 };
+  await fetchPageContents(pages, concurrency, progressBar);
+};
 
-        exec(command, options, (err, stdout, stderr) => {
-          if (err) {
-            console.error(`exec error: ${err}`);
-          }
-          progressBar.increment();
-          return resolve();
-        });
-      });
-    });
-})();
+if (require.main === module) {
+  main().catch((err) => {
+    console.error(err);
+    process.exitCode = 1;
+  });
+}
+
+module.exports = { fetchPageContents, runCacheTask };

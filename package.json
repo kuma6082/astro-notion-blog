@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "build": "astro build",
+    "build": "npm run cache:fetch && astro build",
     "build:cached": "npm run cache:fetch && astro build",
     "preview": "astro preview",
     "astro": "astro",
@@ -14,7 +14,8 @@
     "format": "npx prettier --write .",
     "cache:fetch": "node scripts/blog-contents-cache.cjs",
     "cache:purge": "nx reset && rm -f tmp/*",
-    "_fetch-notion-blocks": "node scripts/retrieve-block-children.cjs"
+    "_fetch-notion-blocks": "node scripts/retrieve-block-children.cjs",
+    "test": "node --test tests/*.test.cjs"
   },
   "dependencies": {
     "@astrojs/react": "^4.1.2",
