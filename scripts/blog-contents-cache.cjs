@@ -1,19 +1,29 @@
-const { exec } = require('child_process');
+const { execFile } = require('child_process');
+const { childFailure } = require('./cache-diagnostics.cjs');
 const { Client } = require('@notionhq/client');
 const cliProgress = require('cli-progress');
 const { PromisePool } = require('@supercharge/promise-pool');
 
 const notion = new Client({ auth: process.env.NOTION_API_SECRET });
 
-const runCacheTask = (page, execCommand = exec) => {
+const runCacheTask = (page, execCommand = execFile) => {
   return new Promise((resolve, reject) => {
-    const command = `NX_BRANCH=main npx nx run astro-notion-blog:_fetch-notion-blocks ${page.id} ${page.last_edited_time}`;
-    const options = { timeout: 60000 };
+    const args = [
+      require.resolve('nx/bin/nx.js'),
+      'run',
+      'astro-notion-blog:_fetch-notion-blocks',
+      page.id,
+      page.last_edited_time,
+    ];
+    const options = {
+      timeout: 60000,
+      env: { ...process.env, NX_BRANCH: 'main' },
+    };
 
-    execCommand(command, options, (err, stdout, stderr) => {
+    execCommand(process.execPath, args, options, (err, stdout, stderr) => {
       if (err) {
-        console.error(`exec error: ${err}`);
-        reject(err);
+        // Never propagate exec errors: their message includes raw child output.
+        reject(new Error(childFailure(err, stdout, stderr)));
         return;
       }
 
@@ -73,7 +83,7 @@ const fetchPageContents = async (
   pages,
   concurrency,
   progressBar,
-  execCommand = exec
+  execCommand = execFile
 ) => {
   const { errors } = await PromisePool.withConcurrency(concurrency)
     .for(pages)
