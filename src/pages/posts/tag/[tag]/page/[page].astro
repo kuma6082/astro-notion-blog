@@ -51,7 +51,7 @@ const currentTag = posts[0].Tags.find((t) => t.name === tag)
 ---
 
 <Layout
-  title={`Posts in ${tag} ${page}/${numberOfPages}`}
+  title={`${tag} の記事 ${page}/${numberOfPages}`}
   path={`/posts/tag/${tag}/page/${page}`}
 >
   <div slot="main" class={styles.main}>
@@ -91,8 +91,8 @@ const currentTag = posts[0].Tags.find((t) => t.name === tag)
   </div>
 
   <div slot="aside" class={styles.aside}>
-    <BlogPostsLink heading="Recommended" posts={rankedPosts} />
-    <BlogTagsLink heading="Categories" tags={tags} />
+    <BlogPostsLink heading="おすすめ記事" posts={rankedPosts} />
+    <BlogTagsLink heading="カテゴリー" tags={tags} />
   </div>
 </Layout>
 
