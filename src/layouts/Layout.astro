@@ -60,6 +60,11 @@ if (database.Icon && database.Icon.Type === 'file') {
     <meta name="generator" content={Astro.generator} />
     <title>{siteTitle}</title>
     <meta name="description" content={siteDescription} />
+    <link
+      rel="icon"
+      type="image/png"
+      href={getStaticFilePath('/favicon.png')}
+    />
     <link rel="canonical" href={siteURL} />
     <meta property="og:url" content={siteURL} />
     <meta property="og:title" content={siteTitle} />
