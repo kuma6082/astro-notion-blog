@@ -1,8 +1,12 @@
 const fs = require('fs');
 const { setTimeout } = require('timers/promises');
 const { Client } = require('@notionhq/client');
+const { workerFailure } = require('./cache-diagnostics.cjs');
 
-const notion = new Client({ auth: process.env.NOTION_API_SECRET });
+const notion = new Client({
+  auth: process.env.NOTION_API_SECRET,
+  logger: () => {},
+});
 
 const requestDuration = 300;
 
@@ -47,18 +51,11 @@ const retrieveAndWriteBlockChildren = async (
       block.synced_block.synced_from &&
       block.synced_block.synced_from.block_id
     ) {
-      try {
-        await retrieveAndWriteBlock(block.synced_block.synced_from.block_id, {
-          notionClient,
-          fileSystem,
-          wait,
-        });
-      } catch (err) {
-        console.log(
-          `Could not retrieve the original synced_block. error: ${err}`
-        );
-        throw err;
-      }
+      await retrieveAndWriteBlock(block.synced_block.synced_from.block_id, {
+        notionClient,
+        fileSystem,
+        wait,
+      });
     } else if (block.has_children) {
       await retrieveAndWriteBlockChildren(block.id, {
         notionClient,
@@ -99,7 +96,7 @@ const main = async () => {
 
 if (require.main === module) {
   main().catch((err) => {
-    console.error(err);
+    console.error(workerFailure(err));
     process.exitCode = 1;
   });
 }

@@ -18,7 +18,7 @@ test('cache worker failures are propagated', async () => {
     stop() {},
   };
   const failure = new Error('cache worker failed');
-  const execCommand = (command, options, callback) => {
+  const execCommand = (command, args, options, callback) => {
     callback(failure);
   };
 
@@ -29,7 +29,7 @@ test('cache worker failures are propagated', async () => {
       progressBar,
       execCommand
     ),
-    /cache worker failed/
+    /Cache child failed/
   );
 });
 
@@ -68,4 +68,27 @@ test('recursive child retrieval completes before the parent resolves', async () 
   assert.deepEqual(calls, ['root', 'child']);
   assert.ok(writes.has('tmp/root.json'));
   assert.ok(writes.has('tmp/child.json'));
+});
+
+test('single-worker prefetch waits for each child before starting the next', async () => {
+  const events = [];
+  await fetchPageContents(
+    ['first', 'second'].map((id) => ({ id, last_edited_time: 'timestamp' })),
+    1,
+    { increment() {}, stop() {} },
+    (command, args, options, callback) => {
+      const id = args[3];
+      events.push(`start:${id}`);
+      setImmediate(() => {
+        events.push(`end:${id}`);
+        callback(null, '', '');
+      });
+    }
+  );
+  assert.deepEqual(events, [
+    'start:first',
+    'end:first',
+    'start:second',
+    'end:second',
+  ]);
 });
