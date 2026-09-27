@@ -12,7 +12,7 @@ export interface Props {
 }
 
 const defaultIntro =
-  '東京都在住。<br>厨房設備レイアウト設計に8年以上従事し、VBA・GAS・Pythonで業務効率化を実践。ITエンジニア転職を目指しプログラミング学習中。学習記録や業務改善、雑記も発信しています。'
+  '東京都在住。<br>厨房設備業界で10年以上、現在は厨房レイアウト設計に従事しています。<br>VBA・GAS・PythonやAIを使った業務改善・自動化を実践中。<br>このブログでは、業務改善の試行錯誤、AI・プログラミングについて発信しています。'
 
 const {
   iconEmoji = '',
@@ -32,7 +32,7 @@ const hasProfileBlocks = profileBlocks.length > 0
     iconEmoji && !iconUrl ? (
       <span class="profile-icon emoji">{iconEmoji}</span>
     ) : iconUrl ? (
-      <img class="profile-icon" src={iconUrl} alt="profile" />
+      <img class="profile-icon" src={iconUrl} alt="プロフィール画像" />
     ) : null
   }
   {

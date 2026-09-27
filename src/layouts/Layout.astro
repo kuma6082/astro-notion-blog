@@ -105,7 +105,7 @@ if (database.Icon && database.Icon.Type === 'file') {
                           </>
                         ) : database.Icon && database.Icon.Type === 'external' ? (
                           <>
-                            <img src={database.Icon.Url} alt="Site icon image" />
+                            <img src={database.Icon.Url} alt="サイトアイコン" />
                             {database.Title}
                           </>
                         ) : database.Icon && database.Icon.Type === 'file' ? (
@@ -138,12 +138,7 @@ if (database.Icon && database.Icon.Type === 'file') {
             <slot name="main" />
 
             <footer>
-              <div>
-                <span>Powered by&nbsp;</span>
-                <a href="https://github.com/otoyo/astro-notion-blog"
-                  >astro-notion-blog</a
-                >
-              </div>
+              <div>© {new Date().getFullYear()} {database.Title}</div>
             </footer>
           </div>
         </main>
