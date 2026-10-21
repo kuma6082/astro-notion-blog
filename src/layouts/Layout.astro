@@ -66,6 +66,12 @@ if (database.Icon && database.Icon.Type === 'file') {
       href={getStaticFilePath('/favicon.png')}
     />
     <link rel="canonical" href={siteURL} />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title={`${database.Title} RSS`}
+      href={new URL(getNavLink('/rss.xml'), Astro.site).toString()}
+    />
     <meta property="og:url" content={siteURL} />
     <meta property="og:title" content={siteTitle} />
     <meta property="og:description" content={siteDescription} />
@@ -87,6 +93,7 @@ if (database.Icon && database.Icon.Type === 'file') {
         {post.UpdatedDate && <meta property="article:modified_time" content={post.UpdatedDate} />}
       </>
     )}
+  </head>
   <body>
     <GoogleAnalytics trackingId={PUBLIC_GA_TRACKING_ID} />
     <div class="container">
